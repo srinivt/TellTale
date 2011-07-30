@@ -1,0 +1,433 @@
+body {
+	background-color: #0A0A0A;
+	color: #fefefe;
+	background-image: url(../static/smi/bg.png);
+	font-family: "Century Gothic", "Gill Sans", "Helvetica Neuve", Helvetica, Arial, sans-serif;
+	/*background: #666 url("../static/smi/ppg-mojojojo.jpg") no-repeat top left;*/
+}
+
+input[type=text], textarea {
+  font-family: "Century Gothic", "Helvetica Neuve", Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+	color: #aaa;
+	font-family: Cuprum, Helvetica, Arial, sans-serif;
+}
+
+#whoami-wrapper {
+	box-shadow: 0 5px 10px #1A1B1F;;
+	/*border-bottom: 2px solid #666;*/	
+	margin-bottom: 20px;
+	/*background: url("../static/smi/mojo-t.gif") no-repeat right;*/
+	background-color: #222;
+	position: fixed;
+	width: 100%;
+	opacity: 0.98;
+	/*background-image: -webkit-gradient(linear, left top,
+		 left bottom, color-stop(0, Lightgray), color-stop(1, gray));
+		background-image: -moz-linear-gradient(top, gray, lightgray);*/
+  z-index: 100;
+	height: 40px;
+	background: -webkit-gradient(linear,left top,left bottom,from(#333),to(#222));
+	background: -moz-linear-gradient(top,#333,#222);	
+	top: 0;
+}
+
+#whoami {
+	width: 950px;
+	margin: 0 auto;
+	height: 100%;
+}
+
+#whoami h3 {
+  margin-top: 8px;
+}
+
+#whoami .logout {
+  float:right; 
+  padding: 10px 25px 0 0;
+}
+
+.logout a {
+  color: #777;
+}
+
+.logout a:hover {
+  color: #999;
+}
+
+.login_box .rpxnow {
+  color: #777;
+}
+
+.logo {
+	margin: 0 4em 0 2em !important;
+	border: none !important;
+}
+
+.logo a {
+  text-decoration: none;
+}
+
+.logo:hover {
+  text-shadow: 1px 1px 10px #999;
+}
+
+.logo .mojo {
+	padding-top: 0.5em;
+}
+
+.menuitem {
+	height: 100%;
+	/*border-left: 3px groove #666;*/
+	float: left;
+	padding: 0 2em;
+	color: #aaa;
+}
+
+.menuitem h3 {
+  padding: 4px;
+}
+
+.mlast {
+	/* border-right: 3px groove #666; */
+}
+
+.menuitem img {
+	margin:0.5em 1em !important;
+}
+
+.active {
+
+}
+
+.active h3 {
+  color: #eee;
+	background: #000;
+	padding: 5px 10px;
+	border-radius: 4px;
+	/* text-shadow: #aaa 2px 2px 3px; */
+}
+
+.mojo {
+	line-height: 0.8em; 
+	font-size: 2em;
+	font-family: 'Slackey', arial, serif;
+	float: left;
+	padding-top: 1em;
+	font-weight: normal;
+}
+
+.person {
+	float: left;
+	text-align: left;
+}
+
+#whoami img.profilepic {
+	float: left;
+	margin: 0.1em 0.5em;
+	padding: 3px;
+	background-color: white;
+	border: black;
+	height: 50px;
+}
+
+#center {
+	margin-top: 70px;
+}
+
+#center {
+	padding-left: 10px;
+}
+
+#right {
+	float: right;
+	padding: 0;
+	/* border: 1px dotted white; */
+	border-right: none;
+	min-height: 300px;
+	padding-right: 10px;
+	margin-top: 70px;
+}
+
+.login_box {
+  margin-top: 2em; 
+  background-color: #171717; 
+  border-radius: 1em; 
+  padding: 0.3em ;
+  border: 2px solid transparent;
+}
+
+.login_box img {
+  float: left;
+  margin: 1em;
+  height: 40px;
+}
+
+.login_box h2 {
+  margin-bottom: 0;
+  font-size: 2.5em !important;
+}
+
+.login_box:hover {
+  background-color: #1d1d1d;
+  border: 2px solid #222;
+}
+
+#right #nav {
+	background-color: lightgray;
+	color: black;
+	font-size: 1.3em;
+	padding: 2px 0;
+	border-radius: 3px 3px 0 0;
+	background-image: -webkit-gradient(linear, left top,
+	 left bottom, color-stop(0, Lightgray), color-stop(1, gray));
+	background-image: -moz-linear-gradient(top, gray, lightgray);
+}
+
+#right #nav a {
+	color: black;
+	text-decoration: none;
+	margin: 0  10px;
+}
+
+.entry {
+  position: relative;
+  margin-bottom: 4em;
+}
+
+#edit_entry.entry {
+  margin-bottom: 2em;
+}
+
+form.entry textarea {
+	height: 75px;
+	width: 550px !important;
+	font-size: +2em;
+	border-radius: 4px;
+	padding: 0.5em;	
+	background-color: #efefef;
+	margin: 0;
+	border-bottom: none;
+	position: relative;;
+}
+
+form.entry input[type='submit'], .button {
+  border: none;
+  vertical-align: top;
+  margin-top:10px;
+  font-size: 1.3em;
+  background: #eee;
+  color: #666;
+  line-height: 14px;
+  padding: 6px 10px 4px;
+  text-decoration: none;
+  border-radius: 5em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+form.entry .smiley-strip {
+	float: left;
+	margin-top: -5px;
+	margin-left: 35px;
+}
+
+form#edit_entry.entry .smiley-strip {
+  left: 20px;
+}
+
+.smiley-strip .selected {
+	background: #efefef;
+	border-radius: 0 0 6px 6px;
+	background-image: -webkit-gradient(linear, left top,
+		 left bottom, color-stop(0, #efefef), color-stop(1, gray));
+	background-image: -moz-linear-gradient(top, #efefef, gray);
+  opacity: 1 !important;
+}
+
+.smiley-strip:hover .smi {
+  opacity: 0.45;
+}
+
+.smiley-strip .smi {
+  float: left;
+	padding: 0.4em 1.2em;
+  padding-bottom: 0;
+  opacity: 0.3;
+}
+
+img.smi {
+	width: 40px;
+	height: 40px;
+	margin: 0 0.2em;
+}
+
+.friendpic {
+	padding: 2px; 
+	background-color: white; 
+	height: 60px; 
+	width:60px;
+	margin: 3px 5px;
+}
+
+.title {
+	border-bottom: 1px dashed #444;
+}
+
+
+
+.message:first {
+  margin-top: 50px;
+}
+
+.message {
+	clear: both;
+	margin: 20px 0;
+}
+
+.message .text {
+	width: 495px;
+	padding-bottom: 10px;
+	border-bottom: 1px dashed #222;
+}
+
+.message .text span {
+	font-size: 2.0em;
+	line-height: 0.8em;
+}
+
+.message .msg-icon {
+  float: left;
+  display:none;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.message:hover .msg-icon {
+  display: block;
+}
+
+.message .msg-icon:hover {
+  background: #333;
+  cursor: pointer;
+}
+
+.message .msg-icon div {
+  background-image:url("../static/images/ui-icons_888888_256x240.png"); 
+  background-position: -64px -113px; 
+  height: 15px; 
+  width: 15px;
+}
+
+.happy, .biggrin, .smile {
+	color: #58AA00 !important;
+}
+
+.sad, .tears {
+	color: #5C5C5C !important;
+}
+
+.neutral, .dry {
+	color: #0074AE !important;
+}
+
+/*http://htmlhelp.com/cgi-bin/color.cgi*/
+.message .time {
+	margin: 5px 3px 0 0;color: darkgrey; clear: both
+}
+
+
+.right-row {
+	clear: both;
+	margin: 15px 0;
+}
+
+.right-row .text {
+	width: 270px;
+}
+
+.right-row .smi {
+	width: 25px;
+	height: 25px;
+	float: left;
+}
+
+.right-row.quote .smi {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.right-row .text-quote {
+	margin-left: 65px;
+	margin-top: 50px;
+}
+
+/*http://htmlhelp.com/cgi-bin/color.cgi*/
+.right-row .time {
+	margin: 1px 3px 0 0;color: grey; clear: both
+}
+
+.mojo-count {
+  float:left; 
+  width: 6em; 
+  margin: 0 1em 0 2em; 
+  text-align:right; 
+  font-weight: bold; 
+  font-size: 1.5em;
+}
+
+.no_posts h3, .no_posts h2 {
+  color: #666;
+}
+
+.info_box {
+  padding: 1em; 
+  border-radius: 1em; 
+  /* border: 1.5em dotted #222; */
+  margin-top: 3.5em;
+}
+
+.info_box > img {
+  float: left;
+  margin-top: 4em;
+}
+
+.info_box ul {
+  margin-left: 1em;
+  list-style-type: none;
+  float: right;
+  width: 45%;
+}
+
+.info_box li h2 {
+  font-size: 3em;
+  margin: 0.2em 0;
+  padding: 0;
+}
+
+.info_box li h3 {
+  font-size: 2.5em;
+  margin: 0.6em;
+}
+
+.info_box li h2, .info_box li h3 {
+  font-family: Cuprum, "Helvetica", "Arial", sans;
+  font-weight: bold;
+  text-shadow: 2px 2px 12px #222;
+  text-transform: capitalize;
+}
+
+.info_box li .normal {
+  font-size: 1.4em;
+  font-weight: normal;
+  color: #ccc;
+}
+
+.ui-dialog-titlebar {
+  display:none;
+}
+
+.ui-dialog.ui-corner-all {
+  border-radius: 10px;
+}

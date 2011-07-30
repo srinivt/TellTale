@@ -6,7 +6,6 @@ require 'ruby-debug'
 # Your own creds
 require_relative 'creds'
 
-
 class NilClass
   def blank?
     return true
@@ -25,7 +24,12 @@ class String
   end
 
   def article
-    special? ? "the" : (self[0].downcase =~ /^(a|e|i|o|u)/ ? "an" : "a")
+    sp = self.split(" ")
+    if sp.size > 1
+      return sp.first.article
+    else
+      special? ? "the" : (self[0].downcase =~ /^(a|e|i|o|u)/ ? "an" : "a")
+    end
   end
 
   private
@@ -46,15 +50,15 @@ class Array
 end
 
 module TellTale
-  
   def self.get_profile(id)
     cl = self.authorize
   end
 
   def self.get_profile_from_url(url)
     puts "Access #{url}.."
-    cl = authorize
-    fields = %w( first-name last-name headline educations positions specialties twitter-accounts public-profile-url )
+    debugger
+    cl = authorize_cli
+    fields = %w( first-name last-name headline educations positions specialties twitter-accounts public-profile-url interests patents )
     profile = cl.profile(:url => url, :fields => fields)
 
     File.open("profile-#{ARGV[0]}.yml", "w") do |f|
@@ -62,21 +66,44 @@ module TellTale
     end
 
     s = Summary.new(profile)
-    puts s.summarize
+    puts s.summarize(ARGV[1] || 0)
     p
   end
 
   def self.get_profile_from_file
     s = Summary.new(Marshal.load(File.open("profile-#{ARGV[0]}.yml")))
-    puts s.summarize
+    debugger
+    puts s.summarize(ARGV[1] || 0)
   end
 
-  def self.authorize
-    client = LinkedIn::Client.new(API_KEY, SECRET_KEY)
+  def self.ll_client
+    LinkedIn::Client.new(API_KEY, SECRET_KEY)
+  end
+
+  def self.get_auth_client(key1, key2)
+    client = self.ll_client
+    client.authorize_from_access(key1, key2)
+    return client
+  end
+
+  def self.authorize_web(callback)
+    client = self.ll_client
+    req_token = client.request_token(:oauth_callback => callback)
+    rtoken = req_token.token
+    rsecret = req_token.secret
+    auth_url = client.request_token.authorize_url
+
+    return [rtoken, rsecret, auth_url]
+  end
+
+  def self.authorize_cli
+    client = self.ll_client
     rtoken = client.request_token.token
     rsecret = client.request_token.secret
 
     auth_url = client.request_token.authorize_url
+
+    system "firefox #{auth_url}"
 
     # XXX Need to fix this for web access
     print "Visit the URL #{auth_url} and gimme the pin: "
@@ -103,12 +130,12 @@ module TellTale
         return ""
       end
 
-      eds = p.educations.all
+      eds = p.educations
       all_degrees = true
       eds.each { |e| all_degrees &&= (e.degree && !e.degree.blank?) }
 
-      ret = all_degrees ? "#{p.first_name} holds " : "#{p.first_name} went to "
-      ret += p.educations.all.map { |e| EducationSummary.new(e, all_degrees) }.collect(&:summary).conjunct
+      ret = all_degrees ? "#{first_name} holds " : "#{first_name} went to "
+      ret += p.educations.map { |e| EducationSummary.new(e, all_degrees) }.collect(&:summary).conjunct
 
       ret += ". "
     end
@@ -116,9 +143,13 @@ module TellTale
     def contact_details
       return "" if (p.public_profile_url.nil?)
 
-      "#{p.first_name} can be reached " +
+=begin
+      "#{first_name} can be reached " +
        (p.twitter_accounts && p.twitter_accounts.total > 0 ? 
-          " on Twitter at #{p.twitter_accounts.all.collect(&:provider_account_name).conjunct}; and " : "") +
+          " on Twitter at #{p.twitter_accounts.collect(&:provider_account_name).conjunct}; and " : "") +
+=end
+      
+       "#{first_name} can be reached " +
        (" on Linkedin at #{p.public_profile_url}")
     end
 
@@ -130,29 +161,29 @@ module TellTale
 
       ret = ""
 
-      positions = p.positions.all.dup
+      positions = p.positions.dup
 
-      # Deal with these later
-      founder_positions = positions.select { |x| (x.title && x.title.downcase =~ /founder/) }
+      # Deal with the past founder positions
+      founder_positions = positions.select { |x| (x.title && x.title.downcase =~ /founder/ && !x.is_current) }
       positions -= founder_positions
 
       # XXX If same as headline, remove
-      present = positions.select { |x| x.end_date.nil? }
+      present = positions.select { |x| x.is_current == 'true' }
       if present.any?
         ret += "Currently, " if render_headline?
-        ret += "#{p.first_name} is "
+        ret += "#{first_name} is "
         ret += present.map { |p| PositionSummary.new(p).summary}.conjunct 
         ret += ". "
       end
 
-      past = positions.select { |x| !x.end_date.nil? }
+      past = positions.select { |x| x.is_current == 'false' }
       if past.any?
-        ret += "Prior to this #{p.first_name} was "
+        ret += "Prior to this #{first_name} was "
         ret += past.map { |p| PositionSummary.new(p).summary }.conjunct
       end
 
       if founder_positions.any?
-        ret += "#{p.first_name} is "
+        ret += "#{first_name} is "
         ret += founder_positions.map { |p| PositionSummary.new(p).summary }.conjunct
       end
 
@@ -161,19 +192,25 @@ module TellTale
 
     def specialties_summary
       if (p.specialties && p.specialties.size > 1) 
-        "#{p.first_name}'s specialties include " + 
-          p.specialties.split("\n").collect(&:cleanup).join(", ") + "."
+        "#{first_name}'s specialties include " + 
+          p.specialties.split("\n").collect(&:cleanup).join(", ") + ". "
       else
         ""
       end
     end
 
     def interests_summary
+      return "" if p.interests.blank?
+      "#{first_name} is intersted in #{p.interests.split(',').conjunct}. "
+    end
+
+    def first_name 
+      p.first_name
     end
 
     def first_position
-      return "" if (!p.positions || p.positions.all[0].nil?)
-      first = p.positions.all[0]
+      return "" if (!p.positions || p.positions[0].nil?)
+      first = p.positions[0]
       "#{first.title} at #{first.company.name}"
     end
 
@@ -184,7 +221,11 @@ module TellTale
     def first_line
       return "" unless render_headline?
 
-      ret = "#{p.first_name} #{p.last_name} is " 
+      return first_line!
+    end
+
+    def first_line! 
+      ret = "#{first_name} #{p.last_name} is " 
       head = p.headline
 
       first_word = head.split(" ").first
@@ -202,27 +243,27 @@ module TellTale
     end
 
     def level3
-      first_line
+      first_line!
     end
 
     def level2
-      first_line + 
-        positions_summary + 
+      first_line + "\n\n" +
+        positions_summary + "\n\n" +  
         contact_details
     end
 
     def level1
-      first_line + 
-        positions_summary + 
-        educations_summary + 
+      first_line + "\n\n" 
+        positions_summary +  " " + 
+        educations_summary + "\n\n" +
         contact_details
     end
 
     def level0
       first_line + "\n\n" +
         positions_summary + " " +
-        specialties_summary + "\n\n" + 
-        educations_summary + 
+        specialties_summary + interests_summary + "\n\n" + 
+        educations_summary + "\n\n" + 
         contact_details
     end
 
@@ -232,6 +273,7 @@ module TellTale
     #   2 : concise
     #   3 : very_short
     def summarize(level = 0)
+      # debugger
       self.send(:"level#{level}")
     end
   end
