@@ -11,6 +11,10 @@ enable :sessions, :logging
 
 PROFILE_FIELDS = %w( first-name last-name headline educations positions specialties twitter-accounts public-profile-url interests patents )
 
+configure do
+  set :port, 80
+end
+
 def client
   LinkedIn::Client.new(API_KEY, SECRET_KEY) 
 end
