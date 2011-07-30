@@ -1,7 +1,5 @@
 require 'rubygems'
 require 'linkedin'
-require 'linguistics'
-require 'ruby-debug'
 
 # Your own creds
 require_relative 'creds'
@@ -115,12 +113,12 @@ module TellTale
   end
 
   class Summary
-    include Linguistics::EN
     
-    attr_accessor :profile
+    attr_accessor :profile, :level
 
     def initialize(in_pro)
       @profile = in_pro
+      @level = 0
     end
 
     def p; @profile; end
@@ -272,9 +270,9 @@ module TellTale
     #   1 : very verbose
     #   2 : concise
     #   3 : very_short
-    def summarize(level = 0)
-      # debugger
-      self.send(:"level#{level}")
+    def summarize(l = 0)
+      @level = l
+      self.send(:"level#{l}")
     end
   end
 

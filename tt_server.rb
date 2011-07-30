@@ -25,8 +25,23 @@ get "/" do
   
     u = params[:url] if params[:url]
 
+    @level = (params[:level] || "0").to_i
+    if params[:shorten]
+      @level += 1
+      if @level > 4
+        @level = 4
+      end
+    elsif params[:elongate]
+      @level -= 1
+      if @level < 0 
+        @level = 0
+      end
+    end
+    puts "*************** New level is: #{@level}"
+    
     @profile = cl.profile(:url => u, :fields => PROFILE_FIELDS)
-    @summary = TellTale::Summary.new(@profile).summarize
+    @summary = TellTale::Summary.new(@profile)
+
     erb :bio
   else
     erb :home
