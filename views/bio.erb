@@ -27,11 +27,11 @@
         <%= @summary.summarize(@level).strip.gsub("\n", "<br />") %>
 
         <div id='button_strip' style='margin: 2em 1em; text-align: center'>
-        <form action="/">
+        <form action="/" method="get">
           <input type=hidden name='url' value='<%= @url %>' />
           <input type=hidden name='level' id='text_level' value='<%= @summary.level %>' />
 
-          <input type=submit name='shorten' value='Make it shorter' <%= "disabled=disabled" if @summary.level >= 4 %> style='margin: 0 2em'/>
+          <input type=submit name='shorten' value='Make it shorter' <%= "disabled=disabled" if @summary.level >= 3 %> style='margin: 0 2em'/>
           <input type=submit name='elongate' value='Make it longer' <%= "disabled=disabled" if @summary.level <= 0 %> style='margin: 0 2em'/>
         </form>
         </div>

@@ -24,16 +24,13 @@ get "/" do
     cl = client
     # debugger
     cl.authorize_from_access(session[:atoken], session[:asecret])
-    user = params[:u] || 'srinivt'
-    u = "http://linkedin.com/in/#{user}"
-  
-    u = params[:url] if params[:url]
+    u = params[:url] if (params[:url] && params[:url] != "")
 
     @level = (params[:level] || "0").to_i
     if params[:shorten]
       @level += 1
-      if @level > 4
-        @level = 4
+      if @level > 3
+        @level = 3
       end
     elsif params[:elongate]
       @level -= 1
@@ -41,9 +38,12 @@ get "/" do
         @level = 0
       end
     end
-    puts "*************** New level is: #{@level}"
+
+    opts = { :fields => PROFILE_FIELDS }
+    opts[:url] = u if u
+    @url = opts[:url]
     
-    @profile = cl.profile(:url => u, :fields => PROFILE_FIELDS)
+    @profile = cl.profile(opts)
     @summary = TellTale::Summary.new(@profile)
 
     erb :bio

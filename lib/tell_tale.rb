@@ -26,7 +26,7 @@ class String
     if sp.size > 1
       return sp.first.article
     else
-      special? ? "the" : (self[0].downcase =~ /^(a|e|i|o|u)/ ? "an" : "a")
+      special? ? "the" : (self[0].to_s.downcase =~ /^(a|e|i|o|u)/ ? "an" : "a")
     end
   end
 
@@ -251,7 +251,7 @@ module TellTale
     end
 
     def level1
-      first_line + "\n\n" 
+      first_line + "\n\n" +
         positions_summary +  " " + 
         educations_summary + "\n\n" +
         contact_details
