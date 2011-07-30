@@ -7,11 +7,21 @@ require 'ruby-debug'
 require_relative 'creds'
 
 
+class NilClass
+  def blank?
+    return true
+  end
+end
+
 class String
   SPECIAL_STRINGS = %w( founder cto ceo cfo president )
 
   def cleanup
     gsub(/(-|\r|\n|\.)/, "").strip
+  end
+
+  def blank?
+    self.strip == ""
   end
 
   def article
@@ -43,7 +53,6 @@ module TellTale
 
   def self.get_profile_from_url(url)
     puts "Access #{url}.."
-    debugger
     cl = authorize
     fields = %w( first-name last-name headline educations positions specialties twitter-accounts public-profile-url )
     profile = cl.profile(:url => url, :fields => fields)
@@ -72,7 +81,6 @@ module TellTale
     # XXX Need to fix this for web access
     print "Visit the URL #{auth_url} and gimme the pin: "
     pin = STDIN.gets.strip
-    debugger
 
     key1, key2 = client.authorize_from_request(rtoken, rsecret, pin)
     client.authorize_from_access(key1, key2)
@@ -91,14 +99,16 @@ module TellTale
     def p; @profile; end
 
     def educations_summary(level = 0)
-      debugger
-
       if (!p.educations || p.educations.size == 0) 
         return ""
       end
 
-      ret = "#{p.first_name} went to " + 
-            p.educations.all.map { |e| EducationSummary.new(e) }.collect(&:summary).conjunct
+      eds = p.educations.all
+      all_degrees = true
+      eds.each { |e| all_degrees &&= (e.degree && !e.degree.blank?) }
+
+      ret = all_degrees ? "#{p.first_name} holds " : "#{p.first_name} went to "
+      ret += p.educations.all.map { |e| EducationSummary.new(e, all_degrees) }.collect(&:summary).conjunct
 
       ret += ". "
     end
@@ -129,7 +139,8 @@ module TellTale
       # XXX If same as headline, remove
       present = positions.select { |x| x.end_date.nil? }
       if present.any?
-        ret += "Currently, #{p.first_name} is "
+        ret += "Currently, " if render_headline?
+        ret += "#{p.first_name} is "
         ret += present.map { |p| PositionSummary.new(p).summary}.conjunct 
         ret += ". "
       end
@@ -160,11 +171,21 @@ module TellTale
     def interests_summary
     end
 
+    def first_position
+      return "" if (!p.positions || p.positions.all[0].nil?)
+      first = p.positions.all[0]
+      "#{first.title} at #{first.company.name}"
+    end
+
+    def render_headline?
+      p.headline != first_position
+    end
+
     def first_line
+      return "" unless render_headline?
+
       ret = "#{p.first_name} #{p.last_name} is " 
       head = p.headline
-
-      debugger
 
       first_word = head.split(" ").first
       art = first_word.article
@@ -198,7 +219,6 @@ module TellTale
     end
 
     def level0
-      # debugger
       first_line + "\n\n" +
         positions_summary + " " +
         specialties_summary + "\n\n" + 
@@ -226,21 +246,6 @@ module TellTale
 
     def p; @position; end
 
-    def special?
-      SPECIAL_POSITIONS.each do |s|
-        return true if p.title.downcase.strip == s
-      end
-    end
-
-    def special_summary
-      case p.title.downcase
-      when "founder"
-        "the founder of #{p.company.name}"
-      when "co-founder"
-        "a co-founder of #{p.company.name}"
-      end
-    end
-
     # TODO: Include position summary as well? Seems very tough
     # XXX: Lookup company name from nasdaq ticker or something??
     def summary
@@ -251,19 +256,36 @@ module TellTale
       if p.title.downcase =~ /(member)|(chair)/ 
         p.title.gsub!(",", " of")
       end
-      "#{p.title.article} #{p.title}".squeeze
+      "#{p.title.article} #{p.title}"
     end
   end
 
   class EducationSummary
-    attr_accessor :edu, :e
+    attr_accessor :edu, :e, :with_degrees
 
-    def initialize(e)
+    def initialize(e, degrees)
       @edu = @e = e
+      @with_degrees = degrees
     end
 
     def summary
-      e.school_name
+      if with_degrees 
+        ret = "#{degree} "
+        ret += "in #{e.field_of_study} " unless e.field_of_study.blank?
+        ret += "from #{e.school_name}"
+      else
+        e.school_name
+      end
+    end
+
+    def degree
+      return "" if (!e.degree || e.degree.blank?)
+
+      if e.degree.downcase =~ /^b/
+        return "bachelors"
+      end
+
+      return e.degree
     end
   end
 end
