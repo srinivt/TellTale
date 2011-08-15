@@ -53,8 +53,7 @@ module TellTale
   end
 
   def self.get_profile_from_url(url)
-    puts "Access #{url}.."
-    debugger
+    puts "Access #{url}.."    
     cl = authorize_cli
     fields = %w( first-name last-name headline educations positions specialties twitter-accounts public-profile-url interests patents )
     profile = cl.profile(:url => url, :fields => fields)
@@ -70,7 +69,6 @@ module TellTale
 
   def self.get_profile_from_file
     s = Summary.new(Marshal.load(File.open("profile-#{ARGV[0]}.yml")))
-    debugger
     puts s.summarize(ARGV[1] || 0)
   end
 
@@ -329,4 +327,3 @@ module TellTale
     end
   end
 end
-
